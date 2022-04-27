@@ -1,16 +1,9 @@
 import React from 'react';
 
-import { useApplicationState } from '../../hooks/applicationContext';
+import ShadertoyReact from 'shadertoy-react';
+
+import backgroundFragment from '../../shaders/backgroundFragment.glsl';
 
 export const ApplicationContainer: React.FC = () => {
-  const [state] = useApplicationState();
-
-  return (
-    <>
-      <h1>Application</h1>
-      <div>
-        <code>{JSON.stringify(state)}</code>
-      </div>
-    </>
-  );
+  return <ShadertoyReact fs={backgroundFragment} />;
 };
