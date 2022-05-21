@@ -1,6 +1,12 @@
 # perlin-noise-animation
 
-Immersive animated shader-based background. It's inspired by classic Perlin Noise(Stefan Gustavson).
+An immersive animated shader-based background. It's inspired by classic Perlin Noise by Stefan Gustavson.
+
+## Main features
+- Custom fragment shader
+- Shader rotation & motion animation
+- Handy shaders' structure
+- Uv-based colors
 
 ## Getting Started
 
