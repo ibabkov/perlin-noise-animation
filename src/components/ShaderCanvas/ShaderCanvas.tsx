@@ -10,6 +10,8 @@ export type ShaderCanvasProps = {
 	/**
 	 * Vertex shader to be used in the shader program.
 	 * @default `
+	 *  #version 100
+	 *  precision mediump float;
 	 *  attribute vec4 aPosition;
 	 *  void main(void) {
 	 *  gl_Position = aPosition;
@@ -46,6 +48,8 @@ const DEFAULT_UNIFORMS: ShaderCanvasProps['uniforms'] = {
 	uTime: { type: '1f', value: 0 },
 };
 const DEFAULT_VERTEX_SHADER: ShaderCanvasProps['vertexShader'] = `
+  #version 100
+  precision mediump float;
   attribute vec4 aPosition;
 
   void main(void) {

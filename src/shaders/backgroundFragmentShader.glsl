@@ -1,5 +1,5 @@
 #version 100
-precision mediump float;
+precision highp float;
 
 #define PI 3.1415926
 #define GRID_SIZE 0.25
@@ -12,12 +12,10 @@ precision mediump float;
 uniform vec2 uResolution;
 uniform float uTime;
 
-
 @import ./hash;
 @import ./getRandomVector;
 @import ./getBilinearInterpolation;
 @import ./getPerlinValue;
-
 
 vec4 getBackgroundColor(vec2 uv, float strength) {
   vec4 transparentColor = vec4(0.0);
