@@ -6,7 +6,7 @@ mat2 createRotationMatrix(float rotation) {
 }
 
 float getModifiedDot(vec2 uv, vec2 p, float gridDimension, float pHash) {
-  float rotation = sin(iTime * GRID_ROTATION_TIME_SCALE + pHash) * 2. * PI;
+  float rotation = sin(uTime * GRID_ROTATION_TIME_SCALE + pHash) * 2. * PI;
   if (pHash < .5) {
     rotation *= -1.;
   }
@@ -32,7 +32,7 @@ float getPerlinValue(vec2 uv, float gridDimension) {
   vec2 p2 = vec2(xCoord + gridDimension, yCoord + gridDimension);
   vec2 p3 = vec2(xCoord + gridDimension, yCoord);
 
-  float rotation = sin(iTime * .15) * 2. * PI;
+  float rotation = sin(uTime * .15) * 2. * PI;
   mat2 rotationMatrix = createRotationMatrix(rotation);
 
   float dot0 = getModifiedDot(uv, p0, gridDimension, p0Hash);

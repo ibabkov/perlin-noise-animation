@@ -1,3 +1,6 @@
+#version 100
+precision highp float;
+
 #define PI 3.1415926
 #define GRID_SIZE 0.25
 #define GRID_SCALE 10.0
@@ -5,6 +8,9 @@
 
 #define BACKGROUND_TIME_SCALE 0.02
 #define BACKGROUND_INITIAL_X_SHIFT 1.5
+
+uniform vec2 uResolution;
+uniform float uTime;
 
 @import ./hash;
 @import ./getRandomVector;
@@ -19,19 +25,19 @@ vec4 getBackgroundColor(vec2 uv, float strength) {
 }
 
 void main(void) {
-  vec2 staticUv = gl_FragCoord.xy/iResolution.xy;
+  vec2 staticUv = gl_FragCoord.xy / uResolution;
   vec2 uv = staticUv;
-  float aspectRatio = iResolution.x / iResolution.y;
+  float aspectRatio = uResolution.x / uResolution.y;
 
   // Initial background shift
   uv.x += BACKGROUND_INITIAL_X_SHIFT;
   // Moving background
-  uv += vec2(sin(iTime * BACKGROUND_TIME_SCALE), iTime * BACKGROUND_TIME_SCALE);
-  // Fit bacground using aspect ratio
+  uv += vec2(sin(uTime * BACKGROUND_TIME_SCALE), uTime * BACKGROUND_TIME_SCALE);
+  // Fit background using aspect ratio
   uv.x *= aspectRatio;
 
   float strength = sin(getPerlinValue(uv, GRID_SIZE) * GRID_SCALE);
   vec4 backgroundColor = getBackgroundColor(staticUv, strength);
 
-  gl_FragColor = vec4(backgroundColor);
+  gl_FragColor = backgroundColor;
 }

@@ -13,22 +13,18 @@ import { StatusPage } from '../components/StatusPage';
 import { Layout } from '../components/Layout';
 
 function Application({ Component, pageProps }: AppProps) {
-  return (
-    <ErrorBoundary
-      fallback={
-        <StatusPage title={'500'} description={"This page isn't working"} />
-      }
-    >
-      <Head>
-        <title>{DISPLAY_APP_TITLE}</title>
-        <meta name="description" content={APP_DESCRIPTION} />
-        <meta name="viewport" content={VIEWPORT_SETTINGS} />
-      </Head>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </ErrorBoundary>
-  );
+	return (
+		<ErrorBoundary fallback={<StatusPage title={'500'} description={"This page isn't working"} />}>
+			<Head>
+				<title>{DISPLAY_APP_TITLE}</title>
+				<meta name="description" content={APP_DESCRIPTION} />
+				<meta name="viewport" content={VIEWPORT_SETTINGS} />
+			</Head>
+			<Layout>
+				<Component {...pageProps} />
+			</Layout>
+		</ErrorBoundary>
+	);
 }
 
 export default Application;
