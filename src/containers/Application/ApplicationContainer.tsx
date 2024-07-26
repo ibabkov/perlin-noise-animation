@@ -1,9 +1,7 @@
 import React from 'react';
-
-import ShadertoyReact from 'shadertoy-react';
-
-import backgroundFragment from '../../shaders/backgroundFragment.glsl';
+import backgroundFragmentShader from '../../shaders/backgroundFragmentShader.glsl';
+import { ShaderCanvas } from '../../components/ShaderCanvas';
 
 export const ApplicationContainer: React.FC = () => {
-  return <ShadertoyReact fs={backgroundFragment} />;
+	return <ShaderCanvas fragmentShader={backgroundFragmentShader} />;
 };

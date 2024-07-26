@@ -3,6 +3,8 @@
 An immersive animated shader-based background. It's inspired by classic Perlin Noise by Stefan Gustavson.
 
 ## Main features
+
+- Native WebGL app
 - Custom fragment shader
 - Shader rotation & motion animation
 - Handy shaders' structure
