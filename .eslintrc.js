@@ -26,5 +26,21 @@ module.exports = {
 		'@typescript-eslint/explicit-module-boundary-types': 'off',
 		'@typescript-eslint/no-explicit-any': 'off',
 		'newline-before-return': 'error',
+		'comma-dangle': ['error', 'always-multiline'],
+		'import/order': [
+			'error',
+			{
+				'newlines-between': 'always',
+				groups: ['builtin', 'external', 'internal'],
+				pathGroups: [
+					{
+						pattern: 'react',
+						group: 'external',
+						position: 'before',
+					},
+				],
+				pathGroupsExcludedImportTypes: ['react'],
+			},
+		],
 	},
 };
