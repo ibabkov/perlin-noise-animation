@@ -1,4 +1,5 @@
 import React from 'react';
+
 import backgroundFragmentShader from '../../shaders/backgroundFragmentShader.glsl';
 import { ShaderCanvas } from '../../components/ShaderCanvas';
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+
 import { Color, Uniform } from './types';
 import { createShaderCanvasContext, updateUniforms, createUniformLocations, resizeCanvasToDisplaySize, createBuffer } from './helpers';
 
