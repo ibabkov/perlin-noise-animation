@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 
 import { Color, Uniform } from './types';
 import { createShaderCanvasContext, updateUniforms, createUniformLocations, resizeCanvasToDisplaySize, createBuffer } from './helpers';
@@ -58,28 +58,31 @@ const DEFAULT_VERTEX_SHADER: ShaderCanvasProps['vertexShader'] = `
   }
 `;
 
-export const ShaderCanvas: React.FC<ShaderCanvasProps> = props => {
-	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+export const ShaderCanvas = forwardRef<HTMLCanvasElement | null, ShaderCanvasProps>(function ShaderCanvas(props, ref) {
+	const internalRef = useRef<HTMLCanvasElement | null>(null);
 	const {
 		vertexShader: vertexShaderSource = DEFAULT_VERTEX_SHADER,
 		fragmentShader: fragmentShaderSource,
 		uniforms = {},
 		clearColor = DEFAULT_CLEAR_COLOR,
 	} = props;
+	console.log(111);
+	useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(ref, () => internalRef.current);
 
 	useEffect(() => {
-		if (canvasRef.current) {
+		const canvas = internalRef.current;
+		if (canvas) {
 			let requestId: number | null = null;
 			const mergedUniforms = { ...DEFAULT_UNIFORMS, ...uniforms };
-			const context = createShaderCanvasContext(canvasRef.current, vertexShaderSource, fragmentShaderSource);
+			const context = createShaderCanvasContext(canvas, vertexShaderSource, fragmentShaderSource);
 			const vertexBuffer = createBuffer(context);
 			const locations = createUniformLocations(context, mergedUniforms, fragmentShaderSource + vertexShaderSource);
 			const { gl } = context;
 
 			const render = (time: number) => {
-				if (!canvasRef.current) return;
+				if (!canvas) return;
 
-				resizeCanvasToDisplaySize(canvasRef.current);
+				resizeCanvasToDisplaySize(canvas);
 				updateUniforms(context, { uniforms, mergedUniforms, locations, time });
 
 				gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
@@ -107,11 +110,11 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = props => {
 				}
 			};
 		}
-	}, [vertexShaderSource, fragmentShaderSource, canvasRef.current, clearColor]);
+	}, [vertexShaderSource, fragmentShaderSource, internalRef.current, clearColor, uniforms]);
 
 	return (
 		<div style={{ width: '100%', height: '100%' }}>
-			<canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+			<canvas ref={internalRef} style={{ width: '100%', height: '100%' }} />
 		</div>
 	);
-};
+});

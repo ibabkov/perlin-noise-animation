@@ -15,8 +15,8 @@ float getModifiedDot(vec2 uv, vec2 p, float gridDimension, float pHash) {
   return dot((uv - p) / gridDimension, getRandomVector(pHash) * rotationMatrix);
 }
 
-float getPerlinValue(vec2 uv, float gridDimension) {
-  float xCoord = floor(uv.x / gridDimension) * gridDimension;
+float getPerlinValue(vec2 uv, float distance, float gridDimension) {
+	float xCoord = floor(uv.x / gridDimension) * gridDimension;
   float yCoord = floor(uv.y / gridDimension) * gridDimension;
 
   float xIndex = floor(uv.x / gridDimension);
@@ -33,7 +33,6 @@ float getPerlinValue(vec2 uv, float gridDimension) {
   vec2 p3 = vec2(xCoord + gridDimension, yCoord);
 
   float rotation = sin(uTime * .15) * 2. * PI;
-  mat2 rotationMatrix = createRotationMatrix(rotation);
 
   float dot0 = getModifiedDot(uv, p0, gridDimension, p0Hash);
   float dot1 = getModifiedDot(uv, p1, gridDimension, p1Hash);
@@ -43,7 +42,8 @@ float getPerlinValue(vec2 uv, float gridDimension) {
   float xInterp = smoothstep(p0.x, p2.x, uv.x);
   float yInterp = smoothstep(p0.y, p2.y, uv.y);
 
-  float value = getBilinearInterpolation(dot0, dot1, dot2, dot3, xInterp, yInterp);
+  float value = abs(getBilinearInterpolation(dot0, dot1, dot2, dot3, xInterp, yInterp));
+	float dynamicValueScale = smoothstep(0.0, 1.0, distance * BACKGROUND_DISTORTION);
 
-  return abs(value);
+	return value * dynamicValueScale;
 }

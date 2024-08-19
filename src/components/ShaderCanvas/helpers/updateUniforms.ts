@@ -11,6 +11,7 @@ function updateUniforms(context: ShaderCanvasContext, options: UpdateUniformsOpt
 	for (const uniformName in options.locations) {
 		const uniform = getUpdatedUniform(context, uniformName, options);
 		const location = options.locations[uniformName];
+
 		const method = context.gl[`uniform${uniform.type}`].bind(context.gl) as unknown as (...args: any[]) => void;
 		const values = Array.isArray(uniform.value) ? uniform.value : [uniform.value];
 
