@@ -8,8 +8,10 @@ precision highp float;
 
 #define BACKGROUND_THRESHOLD 0.42
 #define BACKGROUND_TIME_SCALE 0.02
-#define BACKGROUND_INITIAL_X_SHIFT 1.5
+#define BACKGROUND_INITIAL_X_SHIFT 2.0
+#define BACKGROUND_DISTORTION 5.0
 
+uniform vec2 uCoordinates;
 uniform vec2 uResolution;
 uniform float uTime;
 
@@ -29,18 +31,16 @@ vec4 getBackgroundColor(vec2 uv, float s) {
 }
 
 void main(void) {
-  vec2 staticUv = gl_FragCoord.xy / uResolution;
-  vec2 uv = staticUv;
-  float aspectRatio = uResolution.x / uResolution.y;
+	float aspectRatio = uResolution.x / uResolution.y;
+	vec2 staticUv = vec2(gl_FragCoord.x / uResolution.x * aspectRatio, gl_FragCoord.y / uResolution.y);
+	vec2 coordinates = vec2(uCoordinates.x * aspectRatio, uCoordinates.y);
+	vec2 uv = vec2(staticUv.x + BACKGROUND_INITIAL_X_SHIFT, staticUv.y);
+	float distance = length(staticUv - coordinates);
 
-  // Initial background shift
-  uv.x += BACKGROUND_INITIAL_X_SHIFT;
-  // Moving background
-  uv += vec2(sin(uTime * BACKGROUND_TIME_SCALE), uTime * BACKGROUND_TIME_SCALE);
-  // Fit background using aspect ratio
-  uv.x *= aspectRatio;
+	// Moving background
+	uv += vec2(sin(uTime * BACKGROUND_TIME_SCALE), uTime * BACKGROUND_TIME_SCALE);
 
-  float strength = getPerlinValue(uv, GRID_SIZE) * GRID_SCALE;
+  float strength = getPerlinValue(uv, distance, GRID_SIZE) * GRID_SCALE;
   vec4 backgroundColor = getBackgroundColor(staticUv, strength);
 
   gl_FragColor = backgroundColor;
