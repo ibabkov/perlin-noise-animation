@@ -64,7 +64,6 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = props => {
 		vertexShader: vertexShaderSource = DEFAULT_VERTEX_SHADER,
 		fragmentShader: fragmentShaderSource,
 		uniforms = {},
-		devicePixelRatio = typeof window === 'undefined' ? 1 : window.devicePixelRatio,
 		clearColor = DEFAULT_CLEAR_COLOR,
 	} = props;
 
@@ -80,11 +79,13 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = props => {
 			const render = (time: number) => {
 				if (!canvasRef.current) return;
 
-				resizeCanvasToDisplaySize(canvasRef.current, devicePixelRatio);
+				resizeCanvasToDisplaySize(canvasRef.current);
 				updateUniforms(context, { uniforms, mergedUniforms, locations, time });
 
 				gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 				gl.useProgram(context.shaderProgram);
+				gl.enable(gl.BLEND);
+				gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 				gl.clearColor(...clearColor);
 				gl.clear(gl.COLOR_BUFFER_BIT);
 				gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -106,7 +107,7 @@ export const ShaderCanvas: React.FC<ShaderCanvasProps> = props => {
 				}
 			};
 		}
-	}, [vertexShaderSource, fragmentShaderSource, canvasRef.current, clearColor, devicePixelRatio]);
+	}, [vertexShaderSource, fragmentShaderSource, canvasRef.current, clearColor]);
 
 	return (
 		<div style={{ width: '100%', height: '100%' }}>
