@@ -66,7 +66,7 @@ export const ShaderCanvas = forwardRef<HTMLCanvasElement | null, ShaderCanvasPro
 		uniforms = {},
 		clearColor = DEFAULT_CLEAR_COLOR,
 	} = props;
-	console.log(111);
+
 	useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(ref, () => internalRef.current);
 
 	useEffect(() => {
