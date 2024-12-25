@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 import type { Uniform } from '../components/ShaderCanvas';
 
-export const useCoordinates = (ref: React.RefObject<HTMLCanvasElement>) => {
+export const useCoordinates = (ref: React.RefObject<HTMLCanvasElement | null>) => {
 	const uniformRef = useRef<Uniform<[number, number]>>({
 		type: '2f',
 		value: [-1, -1],
