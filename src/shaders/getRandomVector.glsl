@@ -13,3 +13,5 @@ vec2 getRandomVector(float seed) {
 
   return vec;
 }
+
+#pragma glslify: export(getRandomVector)

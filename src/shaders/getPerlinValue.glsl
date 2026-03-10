@@ -1,3 +1,9 @@
+#pragma glslify: hash = require(./hash)
+#pragma glslify: getRandomVector = require(./getRandomVector)
+#pragma glslify: getBilinearInterpolation = require(./getBilinearInterpolation)
+
+#define PI 3.14159265359
+
 mat2 createRotationMatrix(float rotation) {
   return mat2(
     cos(rotation), -sin(rotation),
@@ -5,8 +11,8 @@ mat2 createRotationMatrix(float rotation) {
   );
 }
 
-float getModifiedDot(vec2 uv, vec2 p, float gridDimension, float pHash) {
-  float rotation = sin(uTime * GRID_ROTATION_TIME_SCALE + pHash) * 2. * PI;
+float getModifiedDot(vec2 uv, vec2 p, float gridDimension, float pHash, float time, float timeScale) {
+  float rotation = sin(time * timeScale + pHash) * 2. * PI;
   if (pHash < .5) {
     rotation *= -1.;
   }
@@ -15,7 +21,7 @@ float getModifiedDot(vec2 uv, vec2 p, float gridDimension, float pHash) {
   return dot((uv - p) / gridDimension, getRandomVector(pHash) * rotationMatrix);
 }
 
-float getPerlinValue(vec2 uv, float distance, float gridDimension) {
+float getPerlinValue(vec2 uv, float distance, float gridDimension, float time, float timeScale, float distortion) {
 	float xCoord = floor(uv.x / gridDimension) * gridDimension;
   float yCoord = floor(uv.y / gridDimension) * gridDimension;
 
@@ -32,18 +38,20 @@ float getPerlinValue(vec2 uv, float distance, float gridDimension) {
   vec2 p2 = vec2(xCoord + gridDimension, yCoord + gridDimension);
   vec2 p3 = vec2(xCoord + gridDimension, yCoord);
 
-  float rotation = sin(uTime * .15) * 2. * PI;
+  float rotation = sin(time * .15) * 2. * PI;
 
-  float dot0 = getModifiedDot(uv, p0, gridDimension, p0Hash);
-  float dot1 = getModifiedDot(uv, p1, gridDimension, p1Hash);
-  float dot2 = getModifiedDot(uv, p2, gridDimension, p2Hash);
-  float dot3 = getModifiedDot(uv, p3, gridDimension, p3Hash);
+  float dot0 = getModifiedDot(uv, p0, gridDimension, p0Hash, time, timeScale);
+  float dot1 = getModifiedDot(uv, p1, gridDimension, p1Hash, time, timeScale);
+  float dot2 = getModifiedDot(uv, p2, gridDimension, p2Hash, time, timeScale);
+  float dot3 = getModifiedDot(uv, p3, gridDimension, p3Hash, time, timeScale);
 
   float xInterp = smoothstep(p0.x, p2.x, uv.x);
   float yInterp = smoothstep(p0.y, p2.y, uv.y);
 
   float value = abs(getBilinearInterpolation(dot0, dot1, dot2, dot3, xInterp, yInterp));
-	float dynamicValueScale = smoothstep(0.0, 1.0, distance * BACKGROUND_DISTORTION);
+	float dynamicValueScale = smoothstep(0.0, 1.0, distance * distortion);
 
 	return value * dynamicValueScale;
 }
+
+#pragma glslify: export(getPerlinValue)

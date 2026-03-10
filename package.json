@@ -1,37 +1,43 @@
 {
 	"name": "perlin-noise-animation",
 	"version": "0.1.0",
+	"type": "module",
 	"private": false,
 	"engines": {
 		"npm": ">=10.0.0",
-		"node": ">=22.0.0"
+		"node": ">=24.0.0"
 	},
 	"scripts": {
-		"build": "next build",
-		"start:dev": "next dev",
+		"build": "next build --webpack",
+		"start:dev": "next dev --webpack",
 		"start:prod": "next start",
-		"lint": "next lint",
+		"lint": "eslint",
+		"prepare": "husky",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
 		"update": "npx ncu"
 	},
 	"dependencies": {
-		"next": "^15.1.2",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"react-error-boundary": "^5.0.0"
+		"next": "^16.1.6",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4"
 	},
 	"devDependencies": {
-		"@types/node": "^22.10.2",
-		"@types/react": "^19.0.2",
-		"@types/react-dom": "^19.0.2",
-		"@typescript-eslint/eslint-plugin": "^8.18.2",
-		"@typescript-eslint/parser": "^8.18.2",
-		"eslint": "8.57.0",
-		"eslint-config-next": "^15.1.2",
-		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-prettier": "^5.2.1",
-		"npm-check-updates": "^17.1.12",
-		"prettier": "^3.4.2",
-		"typescript": "^5.7.2",
-		"webpack-glsl-loader": "^1.0.1"
+		"@types/node": "^25.3.3",
+		"@types/react": "^19.2.14",
+		"@types/react-dom": "^19.2.3",
+		"@typescript-eslint/eslint-plugin": "^8.56.1",
+		"@typescript-eslint/parser": "^8.56.1",
+		"eslint": "^9.28.0",
+		"eslint-config-next": "^16.1.6",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.5.5",
+		"glslify": "^7.1.1",
+		"glslify-loader": "^2.0.0",
+		"husky": "^9.1.7",
+		"npm-check-updates": "^19.6.3",
+		"prettier": "^3.8.1",
+		"raw-loader": "^4.0.2",
+		"typescript": "^5.9.3"
 	}
 }

@@ -7,13 +7,13 @@ export type StatusPageProps = {
 	description: string;
 };
 
-export const StatusPage: React.FC<StatusPageProps> = props => {
+export const StatusPage = (props: StatusPageProps) => {
 	const { title, description } = props;
 
 	return (
-		<nav className={styles['container']}>
+		<section className={styles['container']}>
 			<span className={styles['title']}>{title}</span>
 			<span className={styles['description']}>{description}</span>
-		</nav>
+		</section>
 	);
 };

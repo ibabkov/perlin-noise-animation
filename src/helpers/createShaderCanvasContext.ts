@@ -1,4 +1,4 @@
-import { ShaderCanvasContext } from '../types';
+import { ShaderCanvasContext } from '../types/webgl';
 
 function createShaderCanvasContext(
 	canvas: HTMLCanvasElement,
@@ -37,9 +37,10 @@ function createShader(gl: WebGLRenderingContext, type: number, source: string) {
 	gl.compileShader(shader);
 
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+		const infoLog = gl.getShaderInfoLog(shader);
 		gl.deleteShader(shader);
 
-		throw new Error(`An error occurred compiling the shaders: ${gl.getShaderInfoLog(shader)}`);
+		throw new Error(`An error occurred compiling the shaders: ${infoLog || 'Unknown error'}`);
 	}
 
 	return shader;

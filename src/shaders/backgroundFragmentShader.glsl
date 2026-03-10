@@ -1,7 +1,6 @@
 #version 100
 precision highp float;
 
-#define PI 3.1415926
 #define GRID_SIZE 0.25
 #define GRID_SCALE 10.0
 #define GRID_ROTATION_TIME_SCALE 0.02
@@ -15,10 +14,7 @@ uniform vec2 uCoordinates;
 uniform vec2 uResolution;
 uniform float uTime;
 
-@import ./hash;
-@import ./getRandomVector;
-@import ./getBilinearInterpolation;
-@import ./getPerlinValue;
+#pragma glslify: getPerlinValue = require(./getPerlinValue)
 
 vec4 getBackgroundColor(vec2 uv, float s) {
 	float strength = sin(s);
@@ -40,7 +36,7 @@ void main(void) {
 	// Moving background
 	uv += vec2(sin(uTime * BACKGROUND_TIME_SCALE), uTime * BACKGROUND_TIME_SCALE);
 
-  float strength = getPerlinValue(uv, distance, GRID_SIZE) * GRID_SCALE;
+  float strength = getPerlinValue(uv, distance, GRID_SIZE, uTime, GRID_ROTATION_TIME_SCALE, BACKGROUND_DISTORTION) * GRID_SCALE;
   vec4 backgroundColor = getBackgroundColor(staticUv, strength);
 
   gl_FragColor = backgroundColor;
