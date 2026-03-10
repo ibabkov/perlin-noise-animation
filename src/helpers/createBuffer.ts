@@ -1,4 +1,4 @@
-import { ShaderCanvasContext } from '../types';
+import { ShaderCanvasContext } from '../types/webgl';
 
 function createBuffer(context: ShaderCanvasContext): WebGLBuffer {
 	const { gl, shaderProgram } = context;

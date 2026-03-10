@@ -1,2 +1,2 @@
 export * from './ShaderCanvas';
-export type { Uniform, UniformType } from './types';
+export type { Uniform, UniformType } from '../../types/webgl';

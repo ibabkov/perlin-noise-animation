@@ -1,4 +1,4 @@
-import { ShaderCanvasContext, Uniform } from '../types';
+import { ShaderCanvasContext, Uniform } from '../types/webgl';
 
 export type UpdateUniformsOptions = {
 	uniforms: Record<string, Uniform>;
@@ -8,14 +8,19 @@ export type UpdateUniformsOptions = {
 };
 
 function updateUniforms(context: ShaderCanvasContext, options: UpdateUniformsOptions): void {
+	const { gl } = context;
+
 	for (const uniformName in options.locations) {
 		const uniform = getUpdatedUniform(context, uniformName, options);
 		const location = options.locations[uniformName];
 
-		const method = context.gl[`uniform${uniform.type}`].bind(context.gl) as unknown as (...args: any[]) => void;
-		const values = Array.isArray(uniform.value) ? uniform.value : [uniform.value];
+		const methodName = `uniform${uniform.type}` as keyof WebGLRenderingContext;
+		const method = gl[methodName];
 
-		method(location, ...values);
+		if (typeof method === 'function') {
+			const values = Array.isArray(uniform.value) ? uniform.value : [uniform.value];
+			(method as any).apply(gl, [location, ...values]);
+		}
 	}
 }
 

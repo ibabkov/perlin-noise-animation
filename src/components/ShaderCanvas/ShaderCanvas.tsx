@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
 
-import { Color, Uniform } from './types';
-import { createShaderCanvasContext, updateUniforms, createUniformLocations, resizeCanvasToDisplaySize, createBuffer } from './helpers';
+import { Uniform, Color } from '../../types/webgl';
+import { useWebGLContext, useUniformLocations, useRenderLoop } from '../../hooks';
+import { resizeCanvasToDisplaySize, updateUniforms } from '../../helpers';
 
 export type ShaderCanvasProps = {
 	/**
@@ -31,20 +32,19 @@ export type ShaderCanvasProps = {
 	 */
 	uniforms?: Record<string, Uniform>;
 	/**
-	 * Clear color to be used when clearing the canvas.
-	 * @default [0.0, 0.0, 0.0, 1.0]
-	 * @see https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/clearColor
-	 */
-	clearColor?: Color;
-	/**
 	 * Device pixel ratio to be used for rendering.
 	 * @default window.devicePixelRatio
 	 */
 	devicePixelRatio?: number;
+	/**
+	 * Clear color for the canvas.
+	 * @default [0.0, 0.0, 0.0, 1.0]
+	 */
+	clearColor?: Color;
 };
 
-const DEFAULT_CLEAR_COLOR: ShaderCanvasProps['clearColor'] = [0.0, 0.0, 0.0, 1.0];
-const DEFAULT_UNIFORMS: ShaderCanvasProps['uniforms'] = {
+const DEFAULT_CLEAR_COLOR: Color = [0.0, 0.0, 0.0, 1.0];
+const DEFAULT_UNIFORMS: Record<string, Uniform> = {
 	uResolution: { type: '2f', value: [0, 0] },
 	uTime: { type: '1f', value: 0 },
 };
@@ -63,54 +63,41 @@ export const ShaderCanvas = forwardRef<HTMLCanvasElement | null, ShaderCanvasPro
 	const {
 		vertexShader: vertexShaderSource = DEFAULT_VERTEX_SHADER,
 		fragmentShader: fragmentShaderSource,
-		uniforms = {},
+		uniforms = DEFAULT_UNIFORMS,
 		clearColor = DEFAULT_CLEAR_COLOR,
 	} = props;
 
 	useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(ref, () => internalRef.current);
 
-	useEffect(() => {
-		const canvas = internalRef.current;
-		if (canvas) {
-			let requestId: number | null = null;
+	const { context, buffer } = useWebGLContext(internalRef, vertexShaderSource, fragmentShaderSource);
+
+	const locations = useUniformLocations(context, uniforms);
+
+	const render = useCallback(
+		(time: number) => {
+			const canvas = internalRef.current;
+			if (!canvas || !context || !buffer) return;
+
+			const { gl, shaderProgram } = context;
 			const mergedUniforms = { ...DEFAULT_UNIFORMS, ...uniforms };
-			const context = createShaderCanvasContext(canvas, vertexShaderSource, fragmentShaderSource);
-			const vertexBuffer = createBuffer(context);
-			const locations = createUniformLocations(context, mergedUniforms, fragmentShaderSource + vertexShaderSource);
-			const { gl } = context;
 
-			const render = (time: number) => {
-				if (!canvas) return;
+			resizeCanvasToDisplaySize(canvas);
+			updateUniforms(context, { uniforms, mergedUniforms, locations, time });
 
-				resizeCanvasToDisplaySize(canvas);
-				updateUniforms(context, { uniforms, mergedUniforms, locations, time });
+			gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+			gl.useProgram(shaderProgram);
+			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
-				gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-				gl.useProgram(context.shaderProgram);
-				gl.enable(gl.BLEND);
-				gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-				gl.clearColor(...clearColor);
-				gl.clear(gl.COLOR_BUFFER_BIT);
-				gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+			gl.enable(gl.BLEND);
+			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+			gl.clearColor(...clearColor);
+			gl.clear(gl.COLOR_BUFFER_BIT);
+			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		},
+		[context, buffer, uniforms, locations, clearColor],
+	);
 
-				requestId = requestAnimationFrame(render);
-			};
-
-			requestId = requestAnimationFrame(render);
-
-			return () => {
-				// Cleanup WebGL resources
-				gl.deleteProgram(context.shaderProgram);
-				gl.deleteShader(context.vertexShader);
-				gl.deleteShader(context.fragmentShader);
-				gl.deleteBuffer(vertexBuffer);
-
-				if (requestId) {
-					cancelAnimationFrame(requestId);
-				}
-			};
-		}
-	}, [vertexShaderSource, fragmentShaderSource, internalRef.current, clearColor, uniforms]);
+	useRenderLoop(render);
 
 	return (
 		<div style={{ width: '100%', height: '100%' }}>
